@@ -69,12 +69,21 @@
   
   :condition (and 
   (at start (on_loading_bay ?c ))
+  (at start (loader_available ?l))
   )
   
-  
+  :effect (and
+    (at start (not (loader_available ?l)))  
+    (at end (loaded ?c))                    
+    (at end (loader_available ?l))      
+    (at end (not (on_loading_bay ?c)))  
   )
-
+)
 
 
 
 )
+
+
+
+
