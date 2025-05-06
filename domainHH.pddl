@@ -13,6 +13,7 @@
     (mover_carrying ?r - mover ?c - crate)
     (loaded ?c - crate)
     (on_loading_bay ?c - crate)
+    (loader_available ?l - loader)
     )
     
   (:functions   ;; Numerics - weight and distance 
@@ -35,7 +36,7 @@
 )
 
 (:action put_down 
-  :parameters (?r -mover ?c - crate ?l - location)
+  :parameters (?r - mover ?c - crate ?l - location)
   :precondition (and 
   (robot_at ?r ?l)
   (mover_carrying ?r ?c)
@@ -50,7 +51,7 @@
     
   (:durative-action move_empty    
     :parameters (?r - mover ?from - location ?to -location)
-    (= ?duration (/ (distance ?from ?to) 10))
+    :duration (= ?duration (/ (distance ?from ?to) 10))
     
     :condition (and          ;; What must be true for the action to start
     (at start (robot_at ?r ?from))
@@ -78,7 +79,7 @@
     (at end (loader_available ?l))      
     (at end (not (on_loading_bay ?c)))  
   )
-)
+) 
 
 
 
