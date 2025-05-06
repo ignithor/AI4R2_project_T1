@@ -1,4 +1,4 @@
-(define (domain <warehouse_planning>)
+(define (domain warehouse_planning)
   (:requirements :typing :durative-actions :negative-preconditions :numeric-fluents)    ;;What functions we use 
   
   (:types       ;; What object types exist 
