@@ -16,9 +16,10 @@
     (loaded ?c - crate)
     (on_loading_bay ?c - crate)
     (loading_bay ?l - location)
-    (loader_busy)
+    (loader_free)
     (robot_free ?r - mover)
     (bay_free)
+    (bay_occupied)
   )
 
   (:functions
@@ -67,7 +68,6 @@
       (at start (robot_at ?r1 ?l))
       (at start (robot_at ?r2 ?l))
       (at start (crate_at ?c ?l))
-      ; (at start (not (= ?r1 ?r2)))
       (at start (robot_free ?r1))
       (at start (robot_free ?r2))
       (over all (robot_at ?r1 ?l))
@@ -79,6 +79,28 @@
       (at end (not (crate_at ?c ?l)))
       (at end (not (robot_free ?r1)))
       (at end (not (robot_free ?r2)))
+    )
+  )
+
+  ;; Drop Crate at Loading Bay (Single Robot)
+  (:durative-action drop_single
+    :parameters (?r - mover ?c - light_crate ?l - location)
+    :duration (= ?duration 0.5)
+    :condition (and
+      (at start (robot_at ?r ?l))
+      (at start (mover_carrying ?r ?c))
+      (at start (loading_bay ?l))
+      (at start (bay_free))
+      (at start (loader_free))
+      (over all (robot_at ?r ?l))
+      (over all (loader_free))
+    )
+    :effect (and
+      (at end (not (mover_carrying ?r ?c)))
+      (at end (crate_at ?c ?l))
+      (at end (on_loading_bay ?c))
+      (at end (robot_free ?r))
+      (at end (bay_occupied))
     )
   )
 )
