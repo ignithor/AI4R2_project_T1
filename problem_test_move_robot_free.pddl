@@ -3,21 +3,21 @@
 
   (:objects
     robot1 - mover
-    locA locB - location
+    location1 location2 - location
   )
 
   (:init
     ;; initial robot condition
-    (robot_at robot1 locA)
+    (robot_at robot1 location1)
     (robot_free robot1)
     ;; distance information
-    (= (distance locA locB) 20)
-    (= (distance locB locA) 20)
+    (= (distance location1 location2) 20)
+    (= (distance location2 location1) 20)
   )
 
   (:goal
-    ;; move from locA to locB
-    (robot_at robot1 locB)
+    ;; move from location1 to location2
+    (robot_at robot1 location2)
   )
 
   (:metric minimize (total-time))

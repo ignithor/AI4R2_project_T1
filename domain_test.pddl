@@ -40,4 +40,22 @@
       (at end (robot_at ?r ?to))
     )
   )
+
+  ;; Pick Up Light Crate (Single Robot)
+  (:durative-action pick_up_single
+    :parameters (?r - mover ?c - light_crate ?l - location)
+    :duration (= ?duration 0.5)
+    :condition (and
+      (at start (robot_at ?r ?l))
+      (at start (crate_at ?c ?l))
+      (at start (< (weight ?c) 50))
+      (at start (robot_free ?r))
+      (over all (robot_at ?r ?l))
+    )
+    :effect (and
+      (at end (mover_carrying ?r ?c))
+      (at end (not (crate_at ?c ?l)))
+      (at end (not (robot_free ?r)))
+    )
+  )
 )
