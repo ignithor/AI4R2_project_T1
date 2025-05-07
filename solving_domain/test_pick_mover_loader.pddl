@@ -6,11 +6,11 @@
     l1 - loader
   )
   (:init
-    (free m1)
+    (empty m1)
     (on_shelf c1)
-    (= (distance_m m1 c1) 0.0)
+    (is_at_crate m1 c1)
     (on_loading_bay c2)
-    (free l1)
+    (empty l1)
     )
   (:goal
     (and (is_picked_by_mover m1 c1)
