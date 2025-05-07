@@ -18,6 +18,8 @@
     (= (weight c2) 20)
     (= (distance c1) 10)
     (= (distance c2) 20)
+    (empty l1)
+    (idle l1)
     )
   (:goal
     (and (loaded c1)

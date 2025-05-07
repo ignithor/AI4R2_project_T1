@@ -8,9 +8,9 @@
   (:predicates
   (at_loading_bay ?m - mover) ;; predicates at_... for movers
   (at_pause ?m - mover) ;; means that it is not managing a crate
+  (idle ?l - loader)
   (on_shelf ?c - crate) ;; predicates on_... for crates
-  (on_loading_bay ?c - crate)
-  (on_conveyor_belt ?c - crate) 
+  (on_loading_bay ?c - crate) 
   (is_picked_by_loader ?l - loader ?c - crate) ;; predicate is_... for action of robot on crate
   (is_loading_crate ?l - loader ?c - crate)
   (is_at_crate ?m - mover ?c - crate)
@@ -29,7 +29,7 @@
 
   (:durative-action mover_pick_single
     :parameters (?m - mover ?c - crate)
-    :duration (= ?duration 0)
+    :duration (= ?duration 0.25)
     :condition (and (at start (empty ?m))
                     (at start (on_shelf ?c))
                     (at start (is_at_crate ?m ?c))
@@ -41,7 +41,7 @@
   
   (:durative-action mover_pick_dual
     :parameters (?m1 - mover ?m2 - mover ?c - crate)
-    :duration (= ?duration 0)
+    :duration (= ?duration 0.25)
     :condition (and (at start (empty ?m1))
                     (at start (empty ?m2))
                     (at start (on_shelf ?c))
@@ -57,7 +57,7 @@
 
   (:durative-action loader_pick
     :parameters (?l - loader ?c - crate)
-    :duration (= ?duration 0)
+    :duration (= ?duration 0.25)
     :condition (and (at start (empty ?l))
                     (at start (on_loading_bay ?c))
     )
@@ -67,24 +67,28 @@
     ))
 
   (:durative-action put_down_single
-    :parameters (?m - mover ?c - crate)
-    :duration (= ?duration 0)
+    :parameters (?m - mover ?l - loader ?c - crate)
+    :duration (= ?duration 0.25)
     :condition (and (at start (is_picked_by_mover_single ?m ?c))
                     (at start (at_loading_bay ?m))
+                    (at start (idle ?l))
     )
     :effect (and (at end (not (is_picked_by_mover_single ?m ?c)))
                   (at end (empty ?m))
                   (at end (at_pause ?m))
                   (at end (on_loading_bay ?c))
+                  (at end (not (is_at_crate ?m ?c)))
+                  (at start (not (idle ?l)))
     ))
   
   (:durative-action put_down_dual
-    :parameters (?m1 - mover ?m2 - mover ?c - crate)
-    :duration (= ?duration 0)
+    :parameters (?m1 - mover ?m2 - mover ?l - loader ?c - crate)
+    :duration (= ?duration 0.25)
     :condition (and (at start (is_picked_by_mover_dual ?m1 ?c))
                     (at start (is_picked_by_mover_dual ?m2 ?c))
                     (at start (at_loading_bay ?m1))
                     (at start (at_loading_bay ?m2))
+                    (at start (idle ?l))
     )
     :effect (and (at end (not (is_picked_by_mover_dual ?m1 ?c)))
                   (at end (not (is_picked_by_mover_dual ?m2 ?c)))
@@ -93,6 +97,9 @@
                   (at end (at_pause ?m1))
                   (at end (at_pause ?m2))
                   (at end (on_loading_bay ?c))
+                  (at end (not (is_at_crate ?m1 ?c)))
+                  (at end (not (is_at_crate ?m2 ?c)))
+                  (at start (not (idle ?l)))
     ))
   
     (:durative-action move_empty
@@ -119,6 +126,32 @@
                   (at end (loaded ?c))
                   (at end (not (is_loading_crate ?l ?c)))
                   (at end (empty ?l))
+                  (at end (idle ?l))
      ))
-        
+
+    (:durative-action move_crate_single
+     :parameters (?m - mover ?c - crate)
+     :duration (= ?duration (/ (* (distance ?c) (weight ?c)) 100))
+     :condition (and (over all (is_picked_by_mover_single ?m ?c))
+                      (over all (< (weight ?c) 50))
+     )
+     :effect (and (at start (is_moving_crate_single ?m ?c))
+                  (at end (not (is_moving_crate_single ?m ?c)))
+                  (at end (at_loading_bay ?m))
+     ))
+    
+    (:durative-action move_crate_dual
+     :parameters (?m1 - mover ?m2 - mover ?c - crate)
+     :duration (= ?duration (/ (* (distance ?c) (weight ?c)) 100))
+     :condition (and (over all (is_picked_by_mover_dual ?m1 ?c))
+                      (over all (is_picked_by_mover_dual ?m2 ?c))
+     )
+     :effect (and (at start (is_moving_crate_dual ?m1 ?c))
+                  (at start (is_moving_crate_dual ?m2 ?c))
+                  (at end (not (is_moving_crate_dual ?m1 ?c)))
+                  (at end (not (is_moving_crate_dual ?m2 ?c)))
+                  (at end (at_loading_bay ?m1))
+                  (at end (at_loading_bay ?m2))
+     ))
+
   )
