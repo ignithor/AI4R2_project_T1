@@ -1,52 +1,43 @@
 (define (domain warehouse_planning)
-  (:requirements :typing :negative-preconditions)    ;;What functions we use 
-  
-  (:types       ;; What object types exist 
+  (:requirements :typing :durative-actions :numeric-fluents)
+
+  (:types
     robot
-    mover loader - robot    
-    crate 
+    mover loader - robot
+    crate
     light_crate heavy_crate - crate
-    location)               
-  (:predicates                              ;;States which either are true or false 
-    (robot_at ?r - robot ?l - location)     ;; Name of predicate is always in front 
+    location
+  )
+
+  (:predicates
+    (robot_at ?r - robot ?l - location)
     (crate_at ?c - crate ?l - location)
     (mover_carrying ?r - mover ?c - crate)
     (loaded ?c - crate)
     (on_loading_bay ?c - crate)
-    )
-    
-  (:functions   ;; Numerics - weight and distance 
-    (weight ?c - crate)                             
-    (distance ?from - location ?to - location)    
-    ;;(time)                                    
-    )        
-
-  (:action pick_up_single 
-    :parameters (?r - mover ?c - crate ?l - location)
-    :precondition (and
-      (robot_at ?r ?l)               
-      (crate_at ?c ?l)               
-      (not (exists (?x - crate) (mover_carrying ?r ?x)))
-    )
-    :effect (and
-      (mover_carrying ?r ?c)        
-      (not (crate_at ?c ?l))  
-    )
+    (loading_bay ?l - location)
+    (loader_busy)
+    (robot_free ?r - mover)
+    (bay_free)
   )
 
-  (:action pick_up_dual
-    :parameters (?r1 - mover ?r2 - mover ?c - crate ?l - location)
-    :precondition (and
-      (robot_at ?r1 ?l)
-      (robot_at ?r2 ?l)
-      (crate_at ?c ?l)
-      (not (exists (?x - crate) (mover_carrying ?r1 ?x)))
-      (not (exists (?x - crate) (mover_carrying ?r2 ?x)))
+  (:functions
+    (weight ?c - crate)
+    (distance ?from - location ?to - location)
+  )
+
+  ;; Move Robot Without Crate
+  (:durative-action move_robot_free
+    :parameters (?r - mover ?from ?to - location)
+    :duration (= ?duration (/ (distance ?from ?to) 10))
+    :condition (and
+      (at start (robot_at ?r ?from))
+      (at start (robot_free ?r))
+      (over all (robot_free ?r))
     )
     :effect (and
-      (mover_carrying ?r1 ?c)
-      (mover_carrying ?r2 ?c)
-      (not (crate_at ?c ?l))
+      (at start (not (robot_at ?r ?from)))
+      (at end (robot_at ?r ?to))
     )
   )
 )
