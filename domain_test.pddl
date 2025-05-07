@@ -130,4 +130,27 @@
       (at end (bay_occupied))
     )
   )
+
+  ;; Load Crate onto Conveyor Belt (Loader)
+  (:durative-action load_crate
+    :parameters (?r - loader ?c - crate ?l - location)
+    :duration (= ?duration 4)
+    :condition (and
+      (at start (robot_at ?r ?l))
+      (at start (crate_at ?c ?l))
+      (at start (on_loading_bay ?c))
+      (at start (loading_bay ?l))
+      (at start (bay_occupied))
+      (at start (loader_free))
+      (over all (robot_at ?r ?l))
+    )
+    :effect (and
+      (at start (not (loader_free)))
+      (at start (not (on_loading_bay ?c)))
+      (at start (not (crate_at ?c ?l)))
+      (at end (loaded ?c))
+      (at end (loader_free))
+      (at end (bay_free))
+    )
+  )
 )
