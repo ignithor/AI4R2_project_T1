@@ -169,4 +169,24 @@
       (at end (robot_at ?r ?to))
     )
   )
+
+  ;; Move Crate (Two Robots)
+  (:durative-action move_crate_dual
+    :parameters (?r1 ?r2 - mover ?c - crate ?from ?to - location)
+    :duration (= ?duration (/ (* (distance ?from ?to) (weight ?c)) 150))
+    :condition (and
+      (at start (robot_at ?r1 ?from))
+      (at start (robot_at ?r2 ?from))
+      (at start (mover_carrying ?r1 ?c))
+      (at start (mover_carrying ?r2 ?c))
+      (over all (mover_carrying ?r1 ?c))
+      (over all (mover_carrying ?r2 ?c))
+    )
+    :effect (and
+      (at start (not (robot_at ?r1 ?from)))
+      (at start (not (robot_at ?r2 ?from)))
+      (at end (robot_at ?r1 ?to))
+      (at end (robot_at ?r2 ?to))
+    )
+  )
 )
