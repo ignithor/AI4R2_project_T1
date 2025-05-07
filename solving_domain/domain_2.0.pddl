@@ -68,7 +68,21 @@
                     (at start (at_loading_bay ?m))
      )
      :effect (and (at start (not (at_pause ?m)))
+                  (at end (not (at_loading_bay ?m)))
                   (at end (is_at_crate ?m ?c))
      ))
 
+    (:durative-action load_crate
+     :parameters (?l - loader ?c - crate)
+     :duration (= ?duration 4)
+     :condition (and (at start (is_picked_by_loader ?l ?c))
+     )
+     :effect (and (at start (not (empty ?l)))
+                  (at start (not (is_picked_by_loader ?l ?c)))
+                  (at start (is_loading_crate ?l ?c))
+                  (at end (loaded ?c))
+                  (at end (not (is_loading_crate ?l ?c)))
+                  (at end (empty ?l))
+     ))
+        
   )
