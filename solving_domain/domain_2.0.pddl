@@ -14,8 +14,10 @@
   (is_picked_by_loader ?l - loader ?c - crate) ;; predicate is_... for action of robot on crate
   (is_loading_crate ?l - loader ?c - crate)
   (is_at_crate ?m - mover ?c - crate)
-  (is_picked_by_mover ?m - mover ?c - crate)
-  (is_moving_crate ?m - mover ?c - crate)
+  (is_picked_by_mover_single ?m - mover ?c - crate)
+  (is_picked_by_mover_dual ?m - mover ?c - crate)
+  (is_moving_crate_single ?m - mover ?c - crate)
+  (is_moving_crate_dual ?m - mover ?c - crate)
   (empty ?r - robot)
   (loaded ?c - crate)
   )
@@ -25,7 +27,7 @@
     (distance ?c - crate)
   )
 
-  (:durative-action mover_pick
+  (:durative-action mover_pick_single
     :parameters (?m - mover ?c - crate)
     :duration (= ?duration 0)
     :condition (and (at start (empty ?m))
@@ -34,9 +36,25 @@
     )
     :effect (and (at end (not (empty ?m)))
                   (at end (not (on_shelf ?c)))
-                  (at end (is_picked_by_mover ?m ?c))
+                  (at end (is_picked_by_mover_single ?m ?c))
     ))
   
+  (:durative-action mover_pick_dual
+    :parameters (?m1 - mover ?m2 - mover ?c - crate)
+    :duration (= ?duration 0)
+    :condition (and (at start (empty ?m1))
+                    (at start (empty ?m2))
+                    (at start (on_shelf ?c))
+                    (at start (is_at_crate ?m1 ?c))
+                    (at start (is_at_crate ?m2 ?c))
+    )
+    :effect (and (at end (not (empty ?m1)))
+                  (at end (not (empty ?m2)))
+                  (at end (not (on_shelf ?c)))
+                  (at end (is_picked_by_mover_dual ?m1 ?c))
+                  (at end (is_picked_by_mover_dual ?m2 ?c))
+    ))
+
   (:durative-action loader_pick
     :parameters (?l - loader ?c - crate)
     :duration (= ?duration 0)
@@ -48,13 +66,13 @@
                   (at end (is_picked_by_loader ?l ?c))
     ))
 
-  (:durative-action put_down
+  (:durative-action put_down_single
     :parameters (?m - mover ?c - crate)
     :duration (= ?duration 0)
-    :condition (and (at start (is_picked_by_mover ?m ?c))
+    :condition (and (at start (is_picked_by_mover_single ?m ?c))
                     (at start (at_loading_bay ?m))
     )
-    :effect (and (at end (not (is_picked_by_mover ?m ?c)))
+    :effect (and (at end (not (is_picked_by_mover_single ?m ?c)))
                   (at end (empty ?m))
                   (at end (on_loading_bay ?c))
     ))
