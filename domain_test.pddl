@@ -58,4 +58,27 @@
       (at end (not (robot_free ?r)))
     )
   )
+
+  ;; Pick Up Crate (Two Robots)
+  (:durative-action pick_up_dual
+    :parameters (?r1 ?r2 - mover ?c - crate ?l - location)
+    :duration (= ?duration 0.5)
+    :condition (and
+      (at start (robot_at ?r1 ?l))
+      (at start (robot_at ?r2 ?l))
+      (at start (crate_at ?c ?l))
+      ; (at start (not (= ?r1 ?r2)))
+      (at start (robot_free ?r1))
+      (at start (robot_free ?r2))
+      (over all (robot_at ?r1 ?l))
+      (over all (robot_at ?r2 ?l))
+    )
+    :effect (and
+      (at end (mover_carrying ?r1 ?c))
+      (at end (mover_carrying ?r2 ?c))
+      (at end (not (crate_at ?c ?l)))
+      (at end (not (robot_free ?r1)))
+      (at end (not (robot_free ?r2)))
+    )
+  )
 )
