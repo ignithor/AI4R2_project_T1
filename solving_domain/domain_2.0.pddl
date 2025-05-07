@@ -142,7 +142,7 @@
     
     (:durative-action move_crate_dual
      :parameters (?m1 - mover ?m2 - mover ?c - crate)
-     :duration (= ?duration (/ (* (distance ?c) (weight ?c)) 100))
+     :duration (= ?duration (/ (* (distance ?c) (weight ?c)) 150))
      :condition (and (over all (is_picked_by_mover_dual ?m1 ?c))
                       (over all (is_picked_by_mover_dual ?m2 ?c))
      )
