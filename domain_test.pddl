@@ -153,4 +153,20 @@
       (at end (bay_free))
     )
   )
+
+  ;; Move Light Crate (Single Robot)
+  (:durative-action move_crate_single
+    :parameters (?r - mover ?c - light_crate ?from ?to - location)
+    :duration (= ?duration (/ (* (distance ?from ?to) (weight ?c)) 100))
+    :condition (and
+      (at start (robot_at ?r ?from))
+      (at start (mover_carrying ?r ?c))
+      (at start (< (weight ?c) 50))
+      (over all (mover_carrying ?r ?c))
+    )
+    :effect (and
+      (at start (not (robot_at ?r ?from)))
+      (at end (robot_at ?r ?to))
+    )
+  )
 )
