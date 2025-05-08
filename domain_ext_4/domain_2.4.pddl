@@ -1,9 +1,10 @@
-(define (domain warehouse-crates)
+(define (domain warehouse-crates-4)
   (:requirements :typing :durative-actions :negative-preconditions)
   (:types
     robot
     mover loader - robot
     crate
+    fragile_crate normal_crate - crate
   )
   (:predicates
   (at_loading_bay ?m - mover) ;; predicates at_... for movers
@@ -28,7 +29,7 @@
   )
 
   (:durative-action mover_pick_single
-    :parameters (?m - mover ?c - crate)
+    :parameters (?m - mover ?c - normal_crate)
     :duration (= ?duration 0.25)
     :condition (and (at start (empty ?m))
                     (at start (on_shelf ?c))
@@ -67,7 +68,7 @@
     ))
 
   (:durative-action put_down_single
-    :parameters (?m - mover ?l - loader ?c - crate)
+    :parameters (?m - mover ?l - loader ?c - normal_crate)
     :duration (= ?duration 0.25)
     :condition (and (at start (is_picked_by_mover_single ?m ?c))
                     (at start (at_loading_bay ?m))
@@ -115,9 +116,23 @@
                   (at end (is_at_crate ?m ?c))
      ))
 
-    (:durative-action load_crate
-     :parameters (?l - loader ?c - crate)
+    (:durative-action load_normal_crate
+     :parameters (?l - loader ?c - normal_crate)
      :duration (= ?duration 4)
+     :condition (and (at start (is_picked_by_loader ?l ?c))
+     )
+     :effect (and (at start (not (empty ?l)))
+                  (at start (not (is_picked_by_loader ?l ?c)))
+                  (at start (is_loading_crate ?l ?c))
+                  (at end (loaded ?c))
+                  (at end (not (is_loading_crate ?l ?c)))
+                  (at end (empty ?l))
+                  (at end (idle ?l))
+     ))
+    
+    (:durative-action load_fragile_crate
+     :parameters (?l - loader ?c - fragile_crate)
+     :duration (= ?duration 6)
      :condition (and (at start (is_picked_by_loader ?l ?c))
      )
      :effect (and (at start (not (empty ?l)))
@@ -130,7 +145,7 @@
      ))
 
     (:durative-action move_crate_single
-     :parameters (?m - mover ?c - crate)
+     :parameters (?m - mover ?c - normal_crate)
      :duration (= ?duration (/ (* (distance ?c) (weight ?c)) 100))
      :condition (and (over all (is_picked_by_mover_single ?m ?c))
                       (over all (< (weight ?c) 50))
