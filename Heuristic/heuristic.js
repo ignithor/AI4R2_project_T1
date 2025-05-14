@@ -2,30 +2,28 @@ function HEURISTIC(state):
     total_time ← 0
 
     for each crate in state.crates:
-        if crate is not yet delivered:
+        if not crate.delivered:
 
-            // Step 1: from robot to crate
-            time_to_crate ← ESTIMATE_TIME_WITHOUT_CRATE(state.robot_position, crate.position)
+            // Step 1: Time for closest available robot to reach crate
+            time_to_crate ← MIN(
+                distance(crate.position, mover1.position),
+                distance(crate.position, mover2.position)
+            ) / 10
 
-            // Step 2: from crate to loading bay
-            time_to_loading_bay ← ESTIMATE_TIME_WITH_CRATES(crate.position, state.loading_bay_position, crate.weight)
+            // Step 2: Estimate time to transport crate to loading bay
+            if crate.weight ≤ 50:
+                // Try to exploit two robots if both available
+                if both mover robots can work together:
+                    time_to_loading_bay ← crate.distance * crate.weight / 150
+                else:
+                    time_to_loading_bay ← crate.distance * crate.weight / 100
+            else:
+                // Heavy crate: requires two robots
+                time_to_loading_bay ← crate.distance * crate.weight / 100
 
-            // Step 3: loading time on belt conveyor
+            // Step 3: Fixed loading time
             loading_time ← 4
 
-            total_time ←  time_to_crate + time_to_loading_bay + loading_time
+            total_time += time_to_crate + time_to_loading_bay + loading_time
 
     return total_time
-    
-function ESTIMATE_TIME_WITHOUT_CRATES(crate.position, state.loading_bay_position):
-    distance
-    time ← distance / 10
-    return time
-
-
-function ESTIMATE_TIME_WITH_CRATES(crate.position, state.loading_bay_position, crate.weight):
-    distance
-    time ← distance * crate.weight / 150
-    return time
-
-
