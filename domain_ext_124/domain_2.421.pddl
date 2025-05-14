@@ -27,6 +27,7 @@
   (is_of_group ?g - group ?c - crate)
   (no_group ?c - crate)
   (no_active_group)
+  (pickable ?c - crate)
   )
 
   (:functions
@@ -42,10 +43,12 @@
     :condition (and (at start (empty ?m))
                     (at start (on_shelf ?c))
                     (at start (is_at_crate ?m ?c))
+                    (at start (pickable ?c))
     )
     :effect (and (at end (not (empty ?m)))
                   (at end (not (on_shelf ?c)))
                   (at end (is_picked_by_mover_single ?m ?c))
+                  (at start (not (pickable ?c)))
     ))
   
   (:durative-action mover_pick_dual
@@ -56,12 +59,14 @@
                     (at start (on_shelf ?c))
                     (at start (is_at_crate ?m1 ?c))
                     (at start (is_at_crate ?m2 ?c))
+                    (at start (pickable ?c))
     )
     :effect (and (at end (not (empty ?m1)))
                   (at end (not (empty ?m2)))
                   (at end (not (on_shelf ?c)))
                   (at end (is_picked_by_mover_dual ?m1 ?c))
                   (at end (is_picked_by_mover_dual ?m2 ?c))
+                  (at start (not (pickable ?c)))
     ))
 
   (:durative-action loader_pick_grouped_crate
@@ -129,6 +134,7 @@
                   (at end (on_loading_bay ?c))
                   (at end (not (is_at_crate ?m ?c)))
                   (at start (not (idle ?l)))
+                  (at end (pickable ?c))
     ))
   
   (:durative-action put_down_to_side_loader_single
@@ -145,6 +151,7 @@
                   (at end (on_loading_bay ?c))
                   (at end (not (is_at_crate ?m ?c)))
                   (at start (not (idle ?l)))
+                  (at end (pickable ?c))
     ))
   
   (:durative-action put_down_to_full_loader_dual
@@ -166,6 +173,7 @@
                   (at end (not (is_at_crate ?m1 ?c)))
                   (at end (not (is_at_crate ?m2 ?c)))
                   (at start (not (idle ?l)))
+                  (at end (pickable ?c))
     ))
   
   (:durative-action put_down_to_side_loader_dual
@@ -188,6 +196,7 @@
                   (at end (not (is_at_crate ?m1 ?c)))
                   (at end (not (is_at_crate ?m2 ?c)))
                   (at start (not (idle ?l)))
+                  (at end (pickable ?c))
     ))
   
   (:durative-action move_empty
