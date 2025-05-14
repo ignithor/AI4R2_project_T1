@@ -29,7 +29,7 @@
 
   (:durative-action mover_pick_single
     :parameters (?m - mover ?c - crate)
-    :duration (= ?duration 0.25)
+    :duration (= ?duration 0)
     :condition (and (at start (empty ?m))
                     (at start (on_shelf ?c))
                     (at start (is_at_crate ?m ?c))
@@ -41,12 +41,13 @@
   
   (:durative-action mover_pick_dual
     :parameters (?m1 - mover ?m2 - mover ?c - crate)
-    :duration (= ?duration 0.25)
+    :duration (= ?duration 0)
     :condition (and (at start (empty ?m1))
                     (at start (empty ?m2))
                     (at start (on_shelf ?c))
                     (at start (is_at_crate ?m1 ?c))
                     (at start (is_at_crate ?m2 ?c))
+                    (over all (not (= ?m1 ?m2)))
     )
     :effect (and (at end (not (empty ?m1)))
                   (at end (not (empty ?m2)))
@@ -57,7 +58,7 @@
 
   (:durative-action loader_pick
     :parameters (?l - loader ?c - crate)
-    :duration (= ?duration 0.25)
+    :duration (= ?duration 0)
     :condition (and (at start (empty ?l))
                     (at start (on_loading_bay ?c))
     )
@@ -68,7 +69,7 @@
 
   (:durative-action put_down_single
     :parameters (?m - mover ?l - loader ?c - crate)
-    :duration (= ?duration 0.25)
+    :duration (= ?duration 0)
     :condition (and (at start (is_picked_by_mover_single ?m ?c))
                     (at start (at_loading_bay ?m))
                     (at start (idle ?l))
@@ -83,7 +84,7 @@
   
   (:durative-action put_down_dual
     :parameters (?m1 - mover ?m2 - mover ?l - loader ?c - crate)
-    :duration (= ?duration 0.25)
+    :duration (= ?duration 0)
     :condition (and (at start (is_picked_by_mover_dual ?m1 ?c))
                     (at start (is_picked_by_mover_dual ?m2 ?c))
                     (at start (at_loading_bay ?m1))

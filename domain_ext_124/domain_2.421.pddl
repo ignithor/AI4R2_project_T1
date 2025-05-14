@@ -274,6 +274,7 @@
      :duration (= ?duration (/ (* (distance ?c) (weight ?c)) 150))
      :condition (and (over all (is_picked_by_mover_dual ?m1 ?c))
                       (over all (is_picked_by_mover_dual ?m2 ?c))
+                      (over all (not (= ?m1 ?m2)))
      )
      :effect (and (at start (is_moving_crate_dual ?m1 ?c))
                   (at start (is_moving_crate_dual ?m2 ?c))
