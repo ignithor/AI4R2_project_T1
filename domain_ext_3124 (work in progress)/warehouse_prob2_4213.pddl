@@ -10,6 +10,7 @@
     st1 st2 - charging_station
   )
   (:init
+    (independent m1 m2)
     (empty m1)
     (empty m2)
     (at_pause m1)
@@ -24,6 +25,10 @@
     (on_shelf c2)
     (on_shelf c3)
     (on_shelf c4)
+    (pickable c1)
+    (pickable c2)
+    (pickable c3)
+    (pickable c4)
     (= (weight c1) 70)
     (= (weight c2) 80)
     (= (weight c3) 20)
@@ -44,6 +49,7 @@
     (= (charging_vel st2) 2)
     (= (battery m1) 20)
     (= (battery m2) 20)
+    (= (charge-bonus) 0)
     )
   (:goal
     (and (loaded c1)
@@ -51,5 +57,5 @@
         (loaded c3)
         (loaded c4)
     ))
-  (:metric minimize (+ (total-time) (group-cost)))
+  (:metric minimize (+ (+ (total-time) (group-cost)) (charge-bonus)))
   )

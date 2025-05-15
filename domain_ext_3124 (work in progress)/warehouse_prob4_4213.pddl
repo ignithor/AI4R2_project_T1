@@ -10,6 +10,7 @@
     st1 - charging_station
   )
   (:init ;; always initialize groups as not active, or not more than one should be active
+    (independent m1 m2)
     (empty m1)
     (empty m2)
     (at_pause m1)
@@ -26,6 +27,12 @@
     (on_shelf c4)
     (on_shelf c5)
     (on_shelf c6)
+    (pickable c1)
+    (pickable c2)
+    (pickable c3)
+    (pickable c4)
+    (pickable c5)
+    (pickable c6)
     (= (weight c1) 30)
     (= (weight c2) 20)
     (= (weight c3) 30)

@@ -10,6 +10,7 @@
     st1 st2 - charging_station
   )
   (:init
+    (independent m1 m2)
     (empty m1)
     (empty m2)
     (at_pause m1)
@@ -23,6 +24,9 @@
     (on_shelf c1)
     (on_shelf c2)
     (on_shelf c3)
+    (pickable c1)
+    (pickable c2)
+    (pickable c3)
     (= (weight c1) 70)
     (= (weight c2) 20)
     (= (weight c3) 20)
