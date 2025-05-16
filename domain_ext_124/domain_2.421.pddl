@@ -302,8 +302,7 @@
     )
     :effect (and (at end (not (group_active ?ga)))
                  (at end (group_active ?gn))
-                 (at end (increase (group-cost) (+ (group-cost) 1))) ;; stupid cost, but the unit increment under did not solve out of VsCode
-                ;  (at end (increase (group-cost) 1))
+                 (at end (assign (group-cost) (+ (group-cost) 1)))
     ))
     
   (:durative-action activate_group
@@ -329,6 +328,4 @@
                 (at end (not (group_active ?ga)))
                 (at end (increase (group-cost) (+ (group-cost) 1)))
     ))
-
-
   )
