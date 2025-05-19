@@ -38,8 +38,8 @@
     (distance ?c - crate)
     (group-cost)
     (battery ?m - mover)
+    (battery-capacity ?m - mover) ;; fixed to 20 in the assignment
     (charging_vel ?st - charging_station)
-    (charge-bonus)
   )
 
   (:durative-action mover_pick_single
@@ -66,6 +66,7 @@
                     (at start (is_at_crate ?m2 ?c))
                     (at start (pickable ?c))
                     (over all (independent ?m1 ?m2))
+                    (over all (independent ?m2 ?m1))
     )
     :effect (and (at end (not (empty ?m1)))
                   (at end (not (empty ?m2)))
@@ -169,6 +170,7 @@
                     (at start (at_loading_bay ?m2))
                     (at start (idle ?l))
                     (over all (independent ?m1 ?m2))
+                    (over all (independent ?m2 ?m1))
     )
     :effect (and (at end (not (is_picked_by_mover_dual ?m1 ?c)))
                   (at end (not (is_picked_by_mover_dual ?m2 ?c)))
@@ -193,6 +195,7 @@
                     (over all (< (weight ?c) 50))
                     (at start (idle ?l))
                     (over all (independent ?m1 ?m2))
+                    (over all (independent ?m2 ?m1))
     )
     :effect (and (at end (not (is_picked_by_mover_dual ?m1 ?c)))
                   (at end (not (is_picked_by_mover_dual ?m2 ?c)))
@@ -207,20 +210,35 @@
                   (at end (pickable ?c))
     ))
   
-  (:durative-action move_empty
+  (:durative-action move_empty_to_single
     :parameters (?m - mover ?c - crate)
     :duration (= ?duration (/ (distance ?c) 10))
     :condition (and (at start (empty ?m))
                   (at start (at_pause ?m))
                   (at start (on_shelf ?c))
                   (at start (at_loading_bay ?m))
-                  (at start (>= (battery ?m) (/ (distance ?c) 10)))
+                  (at start (>= (battery ?m) (+ (/ (distance ?c) 10) (/ (* (distance ?c) (weight ?c)) 100))))
     )
     :effect (and (at start (not (at_pause ?m)))
                 (at end (not (at_loading_bay ?m)))
                 (at end (is_at_crate ?m ?c))
                 (at end (decrease (battery ?m) (/ (distance ?c) 10)))
-    ))    
+    )) 
+
+  (:durative-action move_empty_to_dual_or_single
+    :parameters (?m - mover ?c - crate)
+    :duration (= ?duration (/ (distance ?c) 10))
+    :condition (and (at start (empty ?m))
+                  (at start (at_pause ?m))
+                  (at start (on_shelf ?c))
+                  (at start (at_loading_bay ?m))
+                  (at start (>= (battery ?m) (+ (/ (distance ?c) 10) (/ (* (distance ?c) (weight ?c)) 150))))
+    )
+    :effect (and (at start (not (at_pause ?m)))
+                (at end (not (at_loading_bay ?m)))
+                (at end (is_at_crate ?m ?c))
+                (at end (decrease (battery ?m) (/ (distance ?c) 10)))
+    ))  
 
   (:durative-action load_normal_crate
     :parameters (?l - loader ?c - normal_crate)
@@ -283,12 +301,10 @@
     :duration (= ?duration (/ (* (distance ?c) (weight ?c)) 100))
     :condition (and (over all (is_picked_by_mover_single ?m ?c))
                     (over all (< (weight ?c) 50))
-                    (at start (>= (battery ?m) (/ (* (distance ?c) (weight ?c)) 100)))
     )
     :effect (and (at start (is_moving_crate_single ?m ?c))
                 (at end (not (is_moving_crate_single ?m ?c)))
                 (at end (at_loading_bay ?m))
-                (at end (decrease (battery ?m) (/ (* (distance ?c) (weight ?c)) 100)))
     ))
   
   (:durative-action move_crate_dual
@@ -299,6 +315,7 @@
                     (at start (>= (battery ?m1) (/ (* (distance ?c) (weight ?c)) 150)))
                     (at start (>= (battery ?m2) (/ (* (distance ?c) (weight ?c)) 150)))
                     (over all (independent ?m1 ?m2))
+                    (over all (independent ?m2 ?m1))
     )
     :effect (and (at start (is_moving_crate_dual ?m1 ?c))
                 (at start (is_moving_crate_dual ?m2 ?c))
@@ -319,7 +336,7 @@
     )
     :effect (and (at end (not (group_active ?ga)))
                 (at end (group_active ?gn))
-                (at end (increase (group-cost) (+ (group-cost) 1)))
+                (at end (assign (group-cost) (+ (group-cost) 1)))
     ))
   
   (:durative-action activate_group
@@ -331,7 +348,7 @@
     )
     :effect (and (at end (not (no_active_group)))
                 (at end (group_active ?gn))
-                (at end (increase (group-cost) (+ (group-cost) 1)))
+                (at end (assign (group-cost) (+ (group-cost) 1)))
     ))
   
   (:durative-action deactivate_groups
@@ -343,22 +360,25 @@
     )
     :effect (and (at end (no_active_group))
                 (at end (not (group_active ?ga)))
-                (at end (increase (group-cost) (+ (group-cost) 1)))
+                (at end (assign (group-cost) (+ (group-cost) 1)))
     ))
   
-  (:durative-action charge_mover ;; could also charge to maximum but time optimisation is better this way
+  (:durative-action charge_mover_1_unit ;; could also charge to maximum but time optimisation is better this way
     :parameters (?m - mover ?st - charging_station)
-    :duration (= ?duration (/ 1 (charging_vel ?st))) ;(/ (- 20 (battery ?m)) (charging_vel ?st))) ;; no duration specified to charge
+    :duration (= ?duration (/ 1 (charging_vel ?st)))
+    ; :duration (= ?duration (/ (- 20 (battery ?m)) (charging_vel ?st)))
     :condition (and (at start (at_loading_bay ?m))
                     (at start (at_pause ?m))
                     (at start (free ?st))
+                    (at start (< (battery ?m) (battery-capacity ?m)))
     )
     :effect (and (at start (not (free ?st)))
                 (at start (not (at_pause ?m)))
                 (at end (free ?st))
                 (at end (at_pause ?m))
-                (at end (increase (battery ?m) 1)) ;20))
-                (at end (decrease (charge-bonus) 0.1)))
+                (at end (increase (battery ?m) 1))
+                ; (at end (assign (battery ?m) (battery-capacity ?m)))
     )
 
   )
+)

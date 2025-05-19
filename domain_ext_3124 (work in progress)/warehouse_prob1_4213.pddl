@@ -11,6 +11,7 @@
   )
   (:init
     (independent m1 m2)
+    (independent m2 m1)
     (empty m1)
     (empty m2)
     (at_pause m1)

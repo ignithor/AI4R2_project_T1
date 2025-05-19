@@ -1,4 +1,4 @@
-(define (problem warehouse-1-ext4213)
+(define (problem warehouse-2-ext4213)
   (:domain warehouse-crates-4213)
   (:objects 
     m1 m2 - mover
@@ -11,12 +11,15 @@
   )
   (:init
     (independent m1 m2)
+    (independent m2 m1)
     (empty m1)
     (empty m2)
     (at_pause m1)
     (at_pause m2)
     (at_loading_bay m1)
     (at_loading_bay m2)
+    (= (battery-capacity m1) 20)
+    (= (battery-capacity m2) 20)
     (empty fl)
     (idle fl)
     (empty sl)
@@ -45,11 +48,10 @@
     (= (group-cost) 0)
     (free st1)
     (free st2)
-    (= (charging_vel st1) 2)
+    (= (charging_vel st1) 2) ;charging 2 units of battery by unit of time
     (= (charging_vel st2) 2)
     (= (battery m1) 20)
     (= (battery m2) 20)
-    (= (charge-bonus) 0)
     )
   (:goal
     (and (loaded c1)
@@ -57,5 +59,5 @@
         (loaded c3)
         (loaded c4)
     ))
-  (:metric minimize (+ (+ (total-time) (group-cost)) (charge-bonus)))
+  (:metric minimize (+ (total-time) (group-cost)))
   )
