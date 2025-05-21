@@ -7,7 +7,7 @@
     fl - full_loader
     sl - side_loader
     A B - group
-    st1 - charging_station
+    st1 st2 - charging_station
   )
   (:init ;; always initialize groups as not active, or not more than one should be active
     (independent m1 m2)
@@ -55,7 +55,9 @@
     (no_group c6)
     (= (group-cost) 0)
     (free st1)
+    (free st2)
     (= (charging_vel st1) 2)
+    (= (charging_vel st2) 2)
     (= (battery-capacity m1) 20)
     (= (battery-capacity m2) 20)
     (= (battery m1) 20)
