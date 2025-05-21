@@ -306,11 +306,32 @@
                 (at end (decrease (battery ?m) (/ (* (distance ?c) (weight ?c)) 100)))
     ))
   
-  (:durative-action move_crate_dual
+  (:durative-action move_crate_dual_heavy
+    :parameters (?m1 - mover ?m2 - mover ?c - crate)
+    :duration (= ?duration (/ (* (distance ?c) (weight ?c)) 100))
+    :condition (and (over all (is_picked_by_mover_dual ?m1 ?c))
+                    (over all (is_picked_by_mover_dual ?m2 ?c))
+                    (over all (>= (weight ?c) 50))
+                    (at start (>= (battery ?m1) (/ (* (distance ?c) (weight ?c)) 100)))
+                    (at start (>= (battery ?m2) (/ (* (distance ?c) (weight ?c)) 100)))
+                    (at start (independent ?m1 ?m2))
+    )
+    :effect (and (at start (is_moving_crate_dual ?m1 ?c))
+                (at start (is_moving_crate_dual ?m2 ?c))
+                (at end (not (is_moving_crate_dual ?m1 ?c)))
+                (at end (not (is_moving_crate_dual ?m2 ?c)))
+                (at end (at_loading_bay ?m1))
+                (at end (at_loading_bay ?m2))
+                (at end (decrease (battery ?m1) (/ (* (distance ?c) (weight ?c)) 100)))
+                (at end (decrease (battery ?m2) (/ (* (distance ?c) (weight ?c)) 100)))
+    ))
+  
+  (:durative-action move_crate_dual_light
     :parameters (?m1 - mover ?m2 - mover ?c - crate)
     :duration (= ?duration (/ (* (distance ?c) (weight ?c)) 150))
     :condition (and (over all (is_picked_by_mover_dual ?m1 ?c))
                     (over all (is_picked_by_mover_dual ?m2 ?c))
+                    (over all (< (weight ?c) 50))
                     (at start (>= (battery ?m1) (/ (* (distance ?c) (weight ?c)) 150)))
                     (at start (>= (battery ?m2) (/ (* (distance ?c) (weight ?c)) 150)))
                     (at start (independent ?m1 ?m2))
