@@ -65,8 +65,7 @@
                     (at start (is_at_crate ?m1 ?c))
                     (at start (is_at_crate ?m2 ?c))
                     (at start (pickable ?c))
-                    (over all (independent ?m1 ?m2))
-                    (over all (independent ?m2 ?m1))
+                    (at start (independent ?m1 ?m2))
     )
     :effect (and (at end (not (empty ?m1)))
                   (at end (not (empty ?m2)))
@@ -76,7 +75,7 @@
                   (at start (not (pickable ?c)))
     ))
 
-  (:durative-action loader_pick_grouped_crate
+  (:durative-action full_loader_pick_grouped_crate
     :parameters (?l - full_loader ?c - crate ?g - group)
     :duration (= ?duration 0.1)
     :condition (and (at start (empty ?l))
@@ -88,7 +87,7 @@
                   (at end (is_picked_by_loader ?l ?c))
     ))
   
-  (:durative-action loader_pick_ungrouped_crate
+  (:durative-action full_loader_pick_ungrouped_crate
     :parameters (?l - full_loader ?c - crate)
     :duration (= ?duration 0.1)
     :condition (and (at start (empty ?l))
@@ -104,7 +103,7 @@
     :parameters (?sl - side_loader ?sc - crate ?fl - full_loader ?fc - crate ?g - group) ;; maybe change full_loader to loader to enable more than 2 side_loaders
     :duration (= ?duration 0.1)
     :condition (and (at start (empty ?sl))
-                    (over all (< (weight ?sc) 50))
+                    (at start (< (weight ?sc) 50))
                     (at start (on_loading_bay ?sc))
                     (at start (is_loading_crate ?fl ?fc))
                     (at start (and (group_active ?g) (is_of_group ?g ?sc)))
@@ -118,7 +117,7 @@
     :parameters (?sl - side_loader ?sc - crate ?fl - full_loader ?fc - crate) ;; maybe change full_loader to loader to enable more than 2 side_loaders
     :duration (= ?duration 0.1)
     :condition (and (at start (empty ?sl))
-                    (over all (< (weight ?sc) 50))
+                    (at start (< (weight ?sc) 50))
                     (at start (on_loading_bay ?sc))
                     (at start (is_loading_crate ?fl ?fc))
                     (at start (and (no_active_group) (no_group ?sc)))
@@ -149,7 +148,7 @@
     :duration (= ?duration 0.1)
     :condition (and (at start (is_picked_by_mover_single ?m ?c))
                     (at start (at_loading_bay ?m))
-                    (over all (< (weight ?c) 50))
+                    (at start (< (weight ?c) 50))
                     (at start (idle ?l))
     )
     :effect (and (at end (not (is_picked_by_mover_single ?m ?c)))
@@ -169,8 +168,7 @@
                     (at start (at_loading_bay ?m1))
                     (at start (at_loading_bay ?m2))
                     (at start (idle ?l))
-                    (over all (independent ?m1 ?m2))
-                    (over all (independent ?m2 ?m1))
+                    (at start (independent ?m1 ?m2))
     )
     :effect (and (at end (not (is_picked_by_mover_dual ?m1 ?c)))
                   (at end (not (is_picked_by_mover_dual ?m2 ?c)))
@@ -192,10 +190,9 @@
                     (at start (is_picked_by_mover_dual ?m2 ?c))
                     (at start (at_loading_bay ?m1))
                     (at start (at_loading_bay ?m2))
-                    (over all (< (weight ?c) 50))
+                    (at start (< (weight ?c) 50))
                     (at start (idle ?l))
-                    (over all (independent ?m1 ?m2))
-                    (over all (independent ?m2 ?m1))
+                    (at start (independent ?m1 ?m2))
     )
     :effect (and (at end (not (is_picked_by_mover_dual ?m1 ?c)))
                   (at end (not (is_picked_by_mover_dual ?m2 ?c)))
@@ -237,11 +234,11 @@
     :effect (and (at start (not (at_pause ?m)))
                 (at end (not (at_loading_bay ?m)))
                 (at end (is_at_crate ?m ?c))
-                (at end (decrease (battery ?m) (/ (distance ?c) 10)))
+                (at end (decrease (battery ?m) (/ (distance ?c) 10))) 
     ))  
 
-  (:durative-action load_normal_crate
-    :parameters (?l - loader ?c - normal_crate)
+  (:durative-action full_load_normal_crate
+    :parameters (?l - full_loader ?c - normal_crate)
     :duration (= ?duration 4)
     :condition (and (at start (is_picked_by_loader ?l ?c))
     )
@@ -268,8 +265,8 @@
                 (at end (idle ?l))
     ))
 
-  (:durative-action load_fragile_crate
-    :parameters (?l - loader ?c - fragile_crate)
+  (:durative-action full_load_fragile_crate
+    :parameters (?l - full_loader ?c - fragile_crate)
     :duration (= ?duration 6)
     :condition (and (at start (is_picked_by_loader ?l ?c))
     )
@@ -300,11 +297,13 @@
     :parameters (?m - mover ?c - normal_crate)
     :duration (= ?duration (/ (* (distance ?c) (weight ?c)) 100))
     :condition (and (over all (is_picked_by_mover_single ?m ?c))
-                    (over all (< (weight ?c) 50))
+                    (at start (< (weight ?c) 50))
+                    (at start (>= (battery ?m) (/ (* (distance ?c) (weight ?c)) 100)))
     )
     :effect (and (at start (is_moving_crate_single ?m ?c))
                 (at end (not (is_moving_crate_single ?m ?c)))
                 (at end (at_loading_bay ?m))
+                (at end (decrease (battery ?m) (/ (* (distance ?c) (weight ?c)) 100)))
     ))
   
   (:durative-action move_crate_dual
@@ -314,8 +313,7 @@
                     (over all (is_picked_by_mover_dual ?m2 ?c))
                     (at start (>= (battery ?m1) (/ (* (distance ?c) (weight ?c)) 150)))
                     (at start (>= (battery ?m2) (/ (* (distance ?c) (weight ?c)) 150)))
-                    (over all (independent ?m1 ?m2))
-                    (over all (independent ?m2 ?m1))
+                    (at start (independent ?m1 ?m2))
     )
     :effect (and (at start (is_moving_crate_dual ?m1 ?c))
                 (at start (is_moving_crate_dual ?m2 ?c))
@@ -331,7 +329,7 @@
     :parameters (?ga - group ?gn - group ?c - crate)
     :duration (= ?duration 0)
     :condition (and (at start (group_active ?ga)) ;; ?gn must also be inactive but no negative condition, so let's consider that problems are always initializing with unactive groups (or not more than one)
-                    (over all (is_of_group ?gn ?c))
+                    (at start (is_of_group ?gn ?c))
                     (at start (on_shelf ?c))
     )
     :effect (and (at end (not (group_active ?ga)))
@@ -343,7 +341,7 @@
     :parameters (?gn - group ?c - crate)
     :duration (= ?duration 0)
     :condition (and (at start (no_active_group))
-                    (over all (is_of_group ?gn ?c))
+                    (at start (is_of_group ?gn ?c))
                     (at start (on_shelf ?c))
     )
     :effect (and (at end (not (no_active_group)))
@@ -355,7 +353,7 @@
     :parameters (?ga - group ?c - crate)
     :duration (= ?duration 0)
     :condition (and (at start (group_active ?ga))
-                    (over all (no_group ?c))
+                    (at start (no_group ?c))
                     (at start (on_shelf ?c))
     )
     :effect (and (at end (no_active_group))
@@ -379,6 +377,5 @@
                 (at end (increase (battery ?m) 1))
                 ; (at end (assign (battery ?m) (battery-capacity ?m)))
     )
-
   )
 )

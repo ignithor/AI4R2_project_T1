@@ -6,7 +6,7 @@
     c2 - fragile_crate  
     fl - full_loader
     sl - side_loader
-    A B - group
+    A - group
     st1 st2 - charging_station
   )
   (:init
