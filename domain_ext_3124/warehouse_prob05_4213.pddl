@@ -35,6 +35,8 @@
     (= (group-cost) 0)
     (free st1)
     (free st2)
+    (= (battery-capacity m1) 20)
+    (= (battery-capacity m2) 20)
     (= (charging_vel st1) 2)
     (= (charging_vel st2) 2)
     (= (battery m1) 20)

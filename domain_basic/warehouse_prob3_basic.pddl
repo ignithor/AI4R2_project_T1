@@ -1,12 +1,9 @@
-(define (problem warehouse-3-ext421)
-  (:domain warehouse-crates-421)
+(define (problem warehouse-3)
+  (:domain warehouse-crates)
   (:objects 
     m1 m2 - mover
-    c1 c3 c4 - normal_crate
-    c2 - fragile_crate  
-    fl - full_loader
-    sl - side_loader
-    A - group
+    c1 c2 c3 c4 - crate
+    l - loader
   )
   (:init
     (independent m1 m2)
@@ -17,10 +14,8 @@
     (at_pause m2)
     (at_loading_bay m1)
     (at_loading_bay m2)
-    (empty fl)
-    (idle fl)
-    (empty sl)
-    (idle sl)
+    (empty l)
+    (idle l)
     (on_shelf c1)
     (on_shelf c2)
     (on_shelf c3)
@@ -37,12 +32,6 @@
     (= (distance c2) 20)
     (= (distance c3) 30)
     (= (distance c4) 10)
-    (no_active_group)
-    (is_of_group A c1)
-    (is_of_group A c2)
-    (is_of_group A c3)
-    (no_group c4)
-    (= (group-cost) 0)
     )
   (:goal
     (and (loaded c1)
@@ -50,5 +39,4 @@
         (loaded c3)
         (loaded c4)
     ))
-  (:metric minimize (+ (total-time) (group-cost)))
   )

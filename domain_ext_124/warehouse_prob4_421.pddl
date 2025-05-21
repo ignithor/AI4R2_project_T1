@@ -9,6 +9,8 @@
     A B - group
   )
   (:init ;; always initialize groups as not active, or not more than one should be active
+    (independent m1 m2)
+    (independent m2 m1)
     (empty m1)
     (empty m2)
     (at_pause m1)

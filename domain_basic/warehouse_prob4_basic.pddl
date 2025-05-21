@@ -1,23 +1,21 @@
-(define (problem warehouse-4-ext42)
-  (:domain warehouse-crates-42)
+(define (problem warehouse-4)
+  (:domain warehouse-crates)
   (:objects 
     m1 m2 - mover
-    c1 c6 - normal_crate
-    c2 c3 c4 c5 - fragile_crate  
-    fl - full_loader
-    sl - side_loader
+    c1 c2 c3 c4 c5 c6 - crate 
+    l - loader
   )
-  (:init
+  (:init ;; always initialize groups as not active, or not more than one should be active
+    (independent m1 m2)
+    (independent m2 m1)
     (empty m1)
     (empty m2)
     (at_pause m1)
     (at_pause m2)
     (at_loading_bay m1)
     (at_loading_bay m2)
-    (empty fl)
-    (idle fl)
-    (empty sl)
-    (idle sl)
+    (empty l)
+    (idle l)
     (on_shelf c1)
     (on_shelf c2)
     (on_shelf c3)
