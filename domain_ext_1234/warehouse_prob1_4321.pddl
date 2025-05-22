@@ -1,5 +1,5 @@
-(define (problem warehouse-1-ext4213)
-  (:domain warehouse-crates-4213)
+(define (problem warehouse-1-ext4321)
+  (:domain warehouse-crates-4321)
   (:objects 
     m1 m2 - mover
     c1 c3 - normal_crate

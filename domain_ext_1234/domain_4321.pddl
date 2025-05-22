@@ -1,4 +1,4 @@
-(define (domain warehouse-crates-4213)
+(define (domain warehouse-crates-4321)
   (:requirements :typing :durative-actions :negative-preconditions :numeric-fluents)
   (:types
     robot
